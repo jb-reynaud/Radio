@@ -1,0 +1,15 @@
+{
+  "name": "radio",
+  "version": "1.0.0",
+  "description": "My radio player.",
+  "main": "radio.js",
+  "author": "Jean-Baptiste REYNAUD",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "chalk": "^5.3.0",
+    "child_process": "^1.0.2",
+    "readline": "^1.3.0"
+  }
+}
