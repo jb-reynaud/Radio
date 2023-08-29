@@ -7,6 +7,7 @@ const radioStations = [
     { shortcut: 'c', name: '🇨🇭 Couleur 3', url: 'http://stream.srg-ssr.ch/m/couleur3/mp3_128' },
     { shortcut: 'i', name: '🇫🇷 France Info', url: 'http://icecast.radiofrance.fr/franceinfo-hifi.aac' },
     { shortcut: 'n', name: '🇫🇷 Radio Nova', url: 'http://radionova.ice.infomaniak.ch/radionova-256.aac' },
+    { shortcut: 'w', name: '🇨🇴 La W', url: 'https://24273.live.streamtheworld.com/WRADIOAAC.aac' },
 ];
 
 const rl = readline.createInterface({
