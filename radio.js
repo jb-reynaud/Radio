@@ -1,5 +1,4 @@
 import readline from 'readline';
-import axios from 'axios';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
 
@@ -16,21 +15,12 @@ const rl = readline.createInterface({
 });
 
 const playRadio = async stationUrl => {
-    try {
-        const response = await axios.get(stationUrl, { responseType: 'stream' });
+    const ffplayProcess = spawn('ffplay', ['-nodisp', '-i', stationUrl]);
 
-        const ffplayProcess = spawn('ffplay', ['-nodisp', '-i', 'pipe:0']);
-
-        response.data.pipe(ffplayProcess.stdin);
-
-        ffplayProcess.on('close', () => {
-            console.log(chalk.green('Radio playback ended.'));
-            rl.close();
-        });
-    } catch (error) {
-        console.error(chalk.red('Error while fetching radio stream:'), error);
+    ffplayProcess.on('close', () => {
+        console.log(chalk.green('Radio playback ended.'));
         rl.close();
-    }
+    });
 };
 
 console.log(chalk.yellow('Available radio stations:'));
