@@ -15,6 +15,9 @@ npm install
 node radio.js
 ```
 
+### History 
+Music played are saved in `listening.log` file.
+
 ### Add an alias
 ```bash
 echo 'alias radio="node ~/Public/radio/radio.js"' >> ~/.zshrc

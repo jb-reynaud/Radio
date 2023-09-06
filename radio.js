@@ -1,6 +1,7 @@
 import readline from 'readline';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
+import winston from 'winston';
 
 const radioStations = [
     { shortcut: 'c', name: '🇨🇭 Couleur 3', url: 'http://stream.srg-ssr.ch/m/couleur3/mp3_128' },
@@ -15,6 +16,17 @@ const rl = readline.createInterface({
     output: process.stdout,
 });
 
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        winston.format.printf(({ message, timestamp }) => `${timestamp}: ${message}`),
+    ),
+    transports: [
+        new winston.transports.File({ filename: 'listening.log' }),
+    ],
+});
+
 const playRadio = async (stationUrl) => {
     const ffplayProcess = spawn('ffplay', ['-nodisp', '-i', stationUrl]);
 
@@ -24,8 +36,9 @@ const playRadio = async (stationUrl) => {
     });
 };
 
-const getMetadata = async (stationUrl) => {
-    const ffprobeProcess = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_format', stationUrl]);
+let previousStreamTitle = '';
+const getMetadata = async (station) => {
+    const ffprobeProcess = spawn('ffprobe', ['-v', 'quiet', '-print_format', 'json', '-show_format', station.url]);
     const metadataChunks = [];
 
     ffprobeProcess.stdout.on('data', (data) => {
@@ -41,6 +54,11 @@ const getMetadata = async (stationUrl) => {
             process.stdout.cursorTo(0);
             if (metadata.format.tags.StreamTitle !== undefined) {
                 process.stdout.write(`🎵 ${metadata.format.tags.StreamTitle}\r`);
+
+                if (previousStreamTitle !== metadata.format.tags.StreamTitle) {
+                    previousStreamTitle = metadata.format.tags.StreamTitle;
+                    logger.info({ message: `[${station.name}] ${previousStreamTitle}` });
+                }
             }
         } catch (error) {
             process.stdout.write('Error parsing JSON:', error);
@@ -61,9 +79,9 @@ rl.question(chalk.cyan('Enter the shortcut of the radio station you want to list
         await playRadio(selectedStation.url);
 
         // Print metadata every 5 seconds.
-        await getMetadata(selectedStation.url);
+        await getMetadata(selectedStation);
         setInterval(async () => {
-            await getMetadata(selectedStation.url);
+            await getMetadata(selectedStation);
         }, 5_000);
     } else {
         process.stdout.write(chalk.red('Invalid station shortcut.\n'));
