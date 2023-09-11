@@ -52,7 +52,7 @@ const getMetadata = async (station) => {
 
             process.stdout.clearLine(0);
             process.stdout.cursorTo(0);
-            if (metadata.format.tags.StreamTitle !== undefined) {
+            if (metadata.format.tags !== undefined && metadata.format.tags.StreamTitle !== undefined) {
                 process.stdout.write(`🎵 ${metadata.format.tags.StreamTitle}\r`);
 
                 if (previousStreamTitle !== metadata.format.tags.StreamTitle) {
